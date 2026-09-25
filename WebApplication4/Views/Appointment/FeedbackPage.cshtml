@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Puan & Geri Bildirim";
+}
+
+<h2>Puan & Geri Bildirim</h2>
+
+<p>Randevu sonrasý puanlama ve yorum býrakabilirsiniz.</p>
+
+<form id="fbForm" onsubmit="return send()">
+    <div class="form-group">
+        <label>Randevu Id</label>
+        <input id="fbId" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Puan (1-5)</label>
+        <input id="fbRating" type="number" min="1" max="5" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Yorum</label>
+        <textarea id="fbComment" class="form-control"></textarea>
+    </div>
+    <button class="btn btn-primary">Gönder</button>
+</form>
+
+<script>
+    function send(){
+        var obj = { BookingId: parseInt(document.getElementById('fbId').value||0), Rating: parseInt(document.getElementById('fbRating').value||0), Comment: document.getElementById('fbComment').value };
+        fetch('/Appointment/Feedback', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(obj) }).then(r=>r.json()).then(j=>{ if(j.success) alert('Teþekkürler'); });
+        return false;
+    }
+</script>

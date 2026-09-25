@@ -1,0 +1,24 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model WebApplication4.Models.Product
+
+<h2>Ürünü Düzenle</h2>
+
+<form asp-action="Edit" asp-controller="Product" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label>Ürün Adý</label>
+        <input class="form-control" type="text" asp-for="ProductName" />
+    </div>
+    <div class="form-group">
+        <label>Miktar</label>
+        <input class="form-control" type="number" asp-for="Quantity" />
+    </div>
+    <div class="form-group">
+        <label>Kategori</label>
+        <input class="form-control" type="text" asp-for="Category" />
+    </div>
+    <button class="btn btn-primary" type="submit">Kaydet</button>
+</form>
+
+<a href="/Product/GetProducts" class="btn btn-secondary" style="margin-top:10px">&lt;&lt; Geri Gel</a>

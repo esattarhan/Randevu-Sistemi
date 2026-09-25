@@ -1,0 +1,47 @@
+﻿@model IEnumerable<WebApplication4.Models.Product>
+
+@{
+    ViewData["Title"] = "Ürünler";
+}
+
+<h2>Ürünler</h2>
+
+<a href="/Home/Index" class="btn btn-secondary">&lt;&lt; Ana Sayfaya Geri Dön</a>
+<a href="/Product/CreateProduct" class="btn btn-primary" style="margin-left:10px">Yeni Ürün Ekle</a>
+
+<hr />
+
+@* Kategorilere göre bölümlere ayırma *@
+@{
+    var groups = Model.GroupBy(p => string.IsNullOrEmpty(p.Category) ? "Diğer" : p.Category);
+}
+
+@foreach (var g in groups)
+{
+    <div class="card" style="margin-bottom:15px">
+        <div class="card-header">
+            <strong>@g.Key</strong>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var p in g)
+                {
+                    <div class="col-md-3" style="margin-bottom:10px">
+                        <div class="border p-2">
+                            <h5>@p.ProductName</h5>
+                            <p>Miktar: @p.Quantity</p>
+                            <div>
+                                <a href="/Product/Edit/@p.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                                <form asp-action="Delete" asp-controller="Product" method="post" style="display:inline">
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Silinsin mi?')">Sil</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+

@@ -1,0 +1,48 @@
+@model IEnumerable<WebApplication4.Models.Booking>
+
+<h2>Yönetici - Gelen Randevular</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Berber</th>
+            <th>Saat</th>
+            <th>Ad Soyad</th>
+            <th>Telefon</th>
+            <th>Durum</th>
+            <th>Ýþlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var a in Model)
+        {
+            <tr>
+                <td>@a.Id</td>
+                <td>@a.StylistName</td>
+                <td>@a.TimeSlot</td>
+                <td>@a.Name @a.Surname</td>
+                <td>@a.Phone</td>
+                <td>@a.Status.ToString()</td>
+                <td>
+                    <form method="post" action="/Appointment/Approve" style="display:inline">
+                        <input type="hidden" name="id" value="@a.Id" />
+                        <button class="btn btn-sm btn-primary" type="submit">Onayla</button>
+                    </form>
+                    <form method="post" action="/Appointment/MarkArrived" style="display:inline">
+                        <input type="hidden" name="id" value="@a.Id" />
+                        <button class="btn btn-sm btn-success" type="submit">Geldi</button>
+                    </form>
+                    <form method="post" action="/Appointment/MarkNoShow" style="display:inline">
+                        <input type="hidden" name="id" value="@a.Id" />
+                        <button class="btn btn-sm btn-danger" type="submit">Gelmedi</button>
+                    </form>
+                    <form method="post" action="/Appointment/NotifyNoShow" style="display:inline">
+                        <input type="hidden" name="id" value="@a.Id" />
+                        <button class="btn btn-sm btn-warning" type="submit">Yöneticiye Haber Ver</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

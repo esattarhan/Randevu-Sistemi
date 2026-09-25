@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<style>
+    body { background: linear-gradient(135deg, #f0f2f5 0%, #d9e2ec 100%); }
+    .hero { max-width:900px; margin:60px auto; padding:30px; background:linear-gradient(180deg,#ffffffcc, #f7f9fb); border-radius:12px; box-shadow:0 8px 30px rgba(20,20,40,0.08); }
+    .brand { font-weight:700; letter-spacing:1px; color:#1b2430 }
+    .cta { margin-top:18px }
+    .brand-anim { display:inline-block }
+    /* simple JS-based color toggle instead of CSS keyframes to avoid Razor parsing issues */
+</style>
+
+<script>
+    // Toggle color for brand animation
+    setInterval(function(){
+        var el = document.querySelector('.brand-anim');
+        if(!el) return;
+        if(el.style.color === 'rgb(104,179,255)') el.style.color = '#2b6cb0'; else el.style.color = '#68b3ff';
+    }, 800);
+</script>
+
+<div class="hero text-center">
+    <h1 class="display-4 brand"><span class="brand-anim">AYLUÇTARHAN</span> <span style="color:#6b7a89">HAİRARTİST</span></h1>
+    <p style="color:#5a6b7a; font-size:1.1rem">Hoş geldiniz! En iyi saç deneyimi için randevu alın. Profesyonel ekibimizle Enes Bey ve Melih Bey hizmetinizde.</p>
+
+    <div class="cta">
+        <a href="/Appointment" class="btn btn-lg btn-primary" style="background:#2b6cb0; border-color:#2b6cb0; padding:12px 28px; border-radius:8px;">Randevu Al</a>
+        <a href="/Product/GetProducts" class="btn btn-outline-secondary" style="margin-left:12px; padding:12px 20px; border-radius:8px;">Ürünleri Gör</a>
+    </div>
+</div>

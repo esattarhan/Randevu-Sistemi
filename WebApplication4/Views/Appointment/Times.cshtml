@@ -1,0 +1,134 @@
+@model List<string>
+@{
+    var barber = (WebApplication4.Models.Stylist)ViewData["Barber"];
+    var taken = (HashSet<string>)ViewData["Taken"] ?? new HashSet<string>();
+}
+
+<style>
+    .slots { display:flex; flex-wrap:wrap; gap:8px }
+    .slot { background:#fff; padding:10px 12px; border-radius:8px; box-shadow:0 6px 12px rgba(30,60,80,0.06); cursor:pointer }
+    .slot:hover { transform:translateY(-2px); transition:all .12s ease }
+    .form-panel { background:linear-gradient(180deg,#ffffff, #f3f7fb); padding:18px; border-radius:10px; box-shadow:0 8px 20px rgba(30,60,80,0.06); }
+    .top-hero { display:flex; gap:18px; align-items:center }
+    .top-hero img { width:220px; height:140px; object-fit:cover; border-radius:8px }
+</style>
+
+<div class="top-hero">
+    <img src="@barber.ImageUrl" alt="@barber.DisplayName" />
+    <div>
+        <h3 style="margin:0">@barber.DisplayName</h3>
+        <p style="color:#5b6c78; margin-top:6px">09:00 - 21:00 arasý 30 dakikalýk randevu slotlarý. Dilediðiniz saati seçin ve bilgilerinizi girin.</p>
+        <a href="/Appointment" class="btn btn-link">? Geri</a>
+    </div>
+    <div style="margin-left:auto">
+        <div style="background:#eef6ff; padding:10px 14px; border-radius:8px">Profil</div>
+    </div>
+</div>
+
+<hr />
+
+<div class="form-panel">
+    <h4>Uygun Saatler</h4>
+    <div class="slots">
+        @foreach(var t in Model)
+        {
+            var isTaken = taken.Contains(t);
+            <div class="slot" style="background:@(isTaken ? "#e6f0ff" : "#e6f9ee"); color:@(isTaken ? "#2b6cb0" : "#1b7a3a"); border:1px solid @(isTaken ? "#cfe1ff" : "#cdeed6") ;" onclick="@(isTaken ? "" : $"showForm('{t}')")">@t</div>
+        }
+    </div>
+    @if (TempData["Success"] != null)
+    {
+        <div style="position:fixed; top:90px; right:20px; z-index:2000">
+            <div style="background:#2b6cb0; color:#fff; padding:10px 14px; border-radius:8px">@TempData["Success"]</div>
+        </div>
+    }
+        }
+    </div>
+
+    <hr />
+
+    <div style="display:flex; gap:18px; margin-top:12px">
+        <div style="flex:1">
+            <div id="appointmentForm" style="display:none;">
+        <h4>Randevu Oluþtur - <span id="slot"></span></h4>
+        <form method="post" action="/Appointment/CreateAppointment">
+            <input type="hidden" name="StylistId" value="@barber.Id" />
+            <input type="hidden" id="timeSlotInput" name="TimeSlot" />
+            <div style="display:flex; gap:8px">
+                <input class="form-control" name="Name" placeholder="Ýsim" required />
+                <input class="form-control" name="Surname" placeholder="Soyisim" required />
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px">
+                    <input id="phoneInput" class="form-control" name="Phone" placeholder="Telefon" required />
+                <input class="form-control" type="number" name="Age" placeholder="Yaþ" />
+            </div>
+            <div style="margin-top:8px">
+                <input class="form-control" name="Request" placeholder="Talep / Not" />
+            </div>
+            <div style="margin-top:10px">
+                <button class="btn btn-primary" type="submit">Randevu Oluþtur</button>
+            </div>
+        </form>
+        </div>
+
+    <div style="width:320px">
+            <div style="background:#fff; padding:12px; border-radius:8px; box-shadow:0 6px 18px rgba(30,60,80,0.06)">
+                <h5 style="margin-top:0">Randevularým</h5>
+                <div style="font-size:0.9rem; color:#6b7a89; margin-bottom:8px">Telefon ile randevularýnýzý görüntüleyin</div>
+                <div style="display:flex; gap:8px">
+                    <input id="lookupPhone" class="form-control" placeholder="Telefon" />
+                    <button type="button" class="btn btn-sm btn-primary" onclick="loadMyAppointments()">Bul</button>
+                </div>
+                <div id="myAppointments" style="margin-top:10px; max-height:320px; overflow:auto"></div>
+                <div style="margin-top:12px; font-size:0.9rem; color:#5b6c78"><strong>Not:</strong> Yeþil butonlar boþ, mavi butonlar dolu slotlarý gösterir.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showForm(slot){
+        document.getElementById('appointmentForm').style.display = 'block';
+        document.getElementById('slot').innerText = slot;
+        document.getElementById('timeSlotInput').value = slot;
+        window.scrollTo(0, document.getElementById('appointmentForm').offsetTop - 20);
+    }
+
+    function loadMyAppointments(){
+        var phone = document.getElementById('lookupPhone').value;
+        if(!phone) return alert('Telefon girin');
+        fetch('/Appointment/MyAppointments?phone=' + encodeURIComponent(phone))
+            .then(r => r.json())
+            .then(data => {
+                var container = document.getElementById('myAppointments');
+                container.innerHTML = '';
+                if(!data.success){ container.innerText = 'Kayýt bulunamadý'; return; }
+                if(data.items.length === 0) { container.innerText = 'Randevu bulunmamaktadýr.'; return; }
+                data.items.forEach(function(it){
+                    var div = document.createElement('div');
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid #eef2f5';
+                    div.innerHTML = '<strong>' + it.StylistName + '</strong><div style="font-size:0.9rem">' + it.TimeSlot + ' - ' + it.Status + '</div>';
+                    container.appendChild(div);
+                });
+                // Eðer formdaki telefon alan boþsa güncelle
+                var phoneInput = document.getElementById('phoneInput');
+                if(phoneInput && !phoneInput.value) phoneInput.value = phone;
+            });
+    }
+
+    function cancelBooking(id){
+        if(!confirm('Randevuyu iptal etmek istediðinize emin misiniz?')) return;
+        fetch('/Appointment/Cancel', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: id })})
+            .then(r=>r.json()).then(j=>{ if(j.success) alert('Ýptal edildi'); loadMyAppointments(); });
+    }
+
+    function editBooking(obj){
+        // Basit prompt tabanlý düzenleme (örnek)
+        var name = prompt('Ýsim', obj.Name || '');
+        if(name == null) return;
+        obj.Name = name;
+        fetch('/Appointment/EditBooking', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(obj)})
+            .then(r=>r.json()).then(j=>{ if(j.success){ alert('Güncellendi'); loadMyAppointments(); } });
+    }
+</script>

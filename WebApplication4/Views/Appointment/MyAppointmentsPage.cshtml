@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Randevularým";
+}
+
+<h2>Randevularým</h2>
+
+<div>
+    <p>Telefonunuzu girip kayýtlý randevularýnýzý görebilirsiniz.</p>
+    <div style="display:flex; gap:8px; max-width:420px">
+        <input id="maPhone" class="form-control" placeholder="Telefon" />
+        <button class="btn btn-primary" onclick="load()">Görüntüle</button>
+    </div>
+    <div id="maList" style="margin-top:12px"></div>
+</div>
+
+<script>
+    function load(){
+        var phone = document.getElementById('maPhone').value;
+        if(!phone) return alert('Telefon giriniz');
+        fetch('/Appointment/MyAppointments?phone=' + encodeURIComponent(phone)).then(r=>r.json()).then(j=>{
+            var c = document.getElementById('maList'); c.innerHTML='';
+            if(!j.success) return c.innerText='Kayýt bulunamadý';
+            j.items.forEach(function(it){
+                var d = document.createElement('div'); d.style.padding='8px'; d.style.borderBottom='1px solid #eee';
+                d.innerHTML = '<strong>'+it.StylistName+'</strong><div>'+it.TimeSlot+' - '+it.Status+'</div>';
+                c.appendChild(d);
+            });
+        });
+    }
+</script>

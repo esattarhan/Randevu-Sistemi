@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Randevularým - Tüm";
+}
+
+<h2>Randevularým</h2>
+
+<p>Bu sayfa yeni sekmede açýlýr ve tüm randevu kayýtlarýnýzý gösterir: Onay Bekleyen, Onaylanan ve Geçmiþ Randevular.</p>
+
+<div style="display:flex; gap:18px">
+    <div style="flex:1">
+        <h4>Onay Bekleyen</h4>
+        <div id="pending" style="border:1px solid #eee; padding:8px; border-radius:6px; min-height:80px"></div>
+
+        <h4 style="margin-top:16px">Onaylanan</h4>
+        <div id="approved" style="border:1px solid #eee; padding:8px; border-radius:6px; min-height:80px"></div>
+
+        <h4 style="margin-top:16px">Geçmiþ</h4>
+        <div id="history" style="border:1px solid #eee; padding:8px; border-radius:6px; min-height:80px"></div>
+    </div>
+    <div style="width:320px">
+        <h4>Filtre</h4>
+        <div style="display:flex; gap:8px">
+            <input id="phone" class="form-control" placeholder="Telefon" />
+            <button class="btn btn-primary" onclick="loadAll()">Yükle</button>
+        </div>
+
+        <h4 style="margin-top:12px">Yeni Randevu Oluþtur</h4>
+        <div>
+            <select id="stylist" class="form-control">
+                <option value="1">Enes Bey</option>
+                <option value="2">Melih Bey</option>
+            </select>
+            <input id="time" class="form-control" placeholder="Saat (HH:mm)" style="margin-top:6px" />
+            <input id="name" class="form-control" placeholder="Ýsim" style="margin-top:6px" />
+            <input id="surname" class="form-control" placeholder="Soyisim" style="margin-top:6px" />
+            <input id="phoneNew" class="form-control" placeholder="Telefon" style="margin-top:6px" />
+            <input id="age" class="form-control" placeholder="Yaþ" style="margin-top:6px" />
+            <input id="request" class="form-control" placeholder="Talep" style="margin-top:6px" />
+            <button class="btn btn-success" style="margin-top:8px" onclick="createNew()">Oluþtur</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function render(list, containerId){
+        var c = document.getElementById(containerId); c.innerHTML='';
+        list.forEach(function(it){
+            var d = document.createElement('div'); d.style.padding='8px'; d.style.borderBottom='1px solid #f0f0f0';
+            d.innerHTML = '<strong>'+it.StylistName+'</strong> <div style="font-size:0.9rem">'+it.TimeSlot+' - '+it.Status+' - Oluþtur: '+it.CreatedAt+'</div>';
+            c.appendChild(d);
+        });
+    }
+
+    function loadAll(){
+        var ph = document.getElementById('phone').value;
+        fetch('/Appointment/MyAppointments?phone=' + encodeURIComponent(ph)).then(r=>r.json()).then(j=>{
+            if(!j.success) return alert('Kayýt yok');
+            var pending = j.items.filter(i=>i.Status=='Pending');
+            var approved = j.items.filter(i=>i.Status=='Approved');
+            var history = j.items.filter(i=>i.Status=='Arrived' || i.Status=='Canceled');
+            render(pending, 'pending'); render(approved, 'approved'); render(history, 'history');
+        });
+    }
+
+    function createNew(){
+        var obj = { StylistId: parseInt(document.getElementById('stylist').value), TimeSlot: document.getElementById('time').value, Name: document.getElementById('name').value, Surname: document.getElementById('surname').value, Phone: document.getElementById('phoneNew').value, Age: parseInt(document.getElementById('age').value||0), Request: document.getElementById('request').value };
+        fetch('/Appointment/CreateAppointment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(obj)}).then(()=>{ alert('Oluþturuldu'); loadAll(); });
+    }
+</script>

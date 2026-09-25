@@ -1,0 +1,53 @@
+@model IEnumerable<WebApplication4.Models.Stylist>
+
+<style>
+    .appt-bg { background: linear-gradient(180deg,#eef2f6, #dbe8f6); padding:30px; border-radius:12px }
+    .stylist-card { background:#fff; border-radius:10px; box-shadow:0 6px 18px rgba(30,60,80,0.06); overflow:hidden }
+    .stylist-card img { height:180px; width:100%; object-fit:cover }
+    .notify { position:fixed; top:20px; right:20px; z-index:1050 }
+    .notify .box { background:#2b6cb0; color:#fff; padding:12px 18px; border-radius:8px; box-shadow:0 6px 18px rgba(30,60,80,0.12); transform-origin:right top; opacity:0; transform:translateY(-8px) scale(.98); transition:all .45s ease; }
+    .fade-in { opacity:1 !important; transform:translateY(0) scale(1) !important }
+    .notify.hide { opacity:0; transform:translateY(-8px) scale(.98); }
+</style>
+
+<div class="appt-bg">
+    <h2 style="text-align:center; margin-bottom:18px">Randevu Almak Ýstediðiniz Kiþiyi Seçin - AYLUÇTARHAN HAÝRARTÝST</h2>
+
+    <div class="row">
+        @foreach(var b in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="stylist-card">
+                    <img src="@b.ImageUrl" alt="@b.DisplayName" />
+                    <div class="p-3">
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <div>
+                                <h4 style="margin:0">@b.DisplayName</h4>
+                                <div style="color:#6b7a89; font-size:0.95rem">@b.Name</div>
+                            </div>
+                            <div>
+                                <a href="/Appointment/Times?barberId=@b.Id" class="btn btn-sm btn-primary">Saatleri Gör</a>
+                            </div>
+                        </div>
+                        <p style="margin-top:10px; color:#5d6b78">Profesyonel hizmet, sýcak ortam ve güncel stiller.</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="notify">
+        <div id="notifBox" class="box fade-in">@TempData["Success"]</div>
+    </div>
+}
+
+<script>
+    // Bildirim otomatik kaybolma
+    setTimeout(function(){
+        var b = document.getElementById('notifBox');
+        if(b){ b.classList.remove('fade-in'); b.parentElement.classList.add('hide'); }
+    }, 4500);
+</script>

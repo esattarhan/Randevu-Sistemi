@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dg3n4IlAy2g=",
+  "dgSpecHash": "rN/SD2PIHIw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Huawei\\source\\repos\\WebApplication4\\WebApplication4\\WebApplication4.csproj",
+  "projectFilePath": "C:\\Users\\Huawei\\source\\repos\\Randevu-Sistemi\\WebApplication4\\WebApplication4.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Huawei\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Huawei\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
@@ -126,15 +126,5 @@
     "C:\\Users\\Huawei\\.nuget\\packages\\system.text.json\\8.0.6\\system.text.json.8.0.6.nupkg.sha512",
     "C:\\Users\\Huawei\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Paket güvenlik açığı verileri alınırken hata oluştu: https://api.nuget.org/v3/index.json kaynağı için hizmet dizini yüklenemiyor.",
-      "projectPath": "C:\\Users\\Huawei\\source\\repos\\WebApplication4\\WebApplication4\\WebApplication4.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\Huawei\\source\\repos\\WebApplication4\\WebApplication4\\WebApplication4.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

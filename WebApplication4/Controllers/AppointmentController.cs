@@ -1,6 +1,6 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication4.Models;
-using System.Linq;
 using System.Collections.Generic;
 using System;
 using WebApplication4.Services;
@@ -89,6 +89,7 @@ namespace WebApplication4.Controllers
 
         private static List<Feedback> _feedbacks = new List<Feedback>();
 
+        // Existing Feedback API that accepts JSON (kept for AJAX compatibility)
         [HttpPost]
         public IActionResult Feedback([FromBody] Feedback feedback)
         {
@@ -97,6 +98,48 @@ namespace WebApplication4.Controllers
             _feedbacks.Add(feedback);
             PersistenceService.SaveFeedbacks(_feedbacks);
             return Json(new { success = true });
+        }
+
+        // Feedback page - shows completed (Arrived) bookings and existing feedbacks
+        public IActionResult FeedbackPage()
+        {
+            var completed = _appointments.Where(b => b.Status == BookingStatus.Arrived).ToList();
+            var feedbacks = PersistenceService.LoadFeedbacks();
+
+            var vm = new FeedbackViewModel
+            {
+                CompletedBookings = completed,
+                Feedbacks = feedbacks,
+                NewFeedback = new Feedback()
+            };
+
+            // If _feedbacks field already used, ensure it's in sync
+            _feedbacks = feedbacks;
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SubmitFeedback(Feedback model)
+        {
+            if (model == null) return BadRequest();
+
+            var feedbacks = PersistenceService.LoadFeedbacks();
+            model.Id = feedbacks.Any() ? feedbacks.Max(f => f.Id) + 1 : 1;
+            feedbacks.Add(model);
+            PersistenceService.SaveFeedbacks(feedbacks);
+
+            // mark booking as notified
+            var booking = _appointments.FirstOrDefault(b => b.Id == model.BookingId);
+            if (booking != null)
+            {
+                booking.Notified = true;
+                PersistenceService.SaveBookings(_appointments);
+            }
+
+            TempData["FeedbackMessage"] = "Geri bildiriminiz kaydedildi. Teþekkürler!";
+            return RedirectToAction("FeedbackPage");
         }
 
         // Basit API: verilen telefon numarasýyla eþleþen randevularý döndürür
